@@ -220,7 +220,7 @@ search_query = st.sidebar.text_input("Search by Symbol, Name, etc...", key="sear
 
 st.sidebar.markdown("---")
 st.sidebar.header("📑 Select a Tab")
-sheet_names = ["Top 250 Stocks","NSE Fundamentals", "Final List", "Final List 2", "-Diff @ 200 DMA", "+Diff @ 200 DMA", "52W Low-GTT", "+%", "-%"]
+sheet_names = ["Top 250 Stocks","NSE Fundamentals", "Final List", "Final List 2", "-Diff @ 200 DMA", "+Diff @ 200 DMA", "52W Low-GTT", "+%", "-%", "Dashboard", "Calc_Data", "Stock Deep Dive", "Sector Analysis", "Custom Screener", "Fundamental Analysis", "Pro Watchlist", "Market Summary", "Smart Money Tracker", "Financial Health", "Executive Summary", "Volume & Price Action", "Market Extremes", "Technical Crossovers", "Trading Signals & Alerts", "Shareholding Analysis", "Elite Stock Screeners", "Sector Deep Dive", "Growth vs Value Playbook", "Market Cap Playbook", "All-Weather Portfolio", "Quality & Compounders", "Market Overview", "Dividend & Income Playbook", "Smart Beta & Factor Investing", "Portfolio Tracker"]
 selected_sheet = st.sidebar.selectbox("Choose sheet", sheet_names, key="filter_sheet")
 
 # ---------- Main Execution ----------
