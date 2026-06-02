@@ -14,12 +14,12 @@ import streamlit.components.v1 as components
 # ==========================================
 # ⚙️ PAGE CONFIGURATION
 # ==========================================
-st.set_page_config(page_title="NSE Stock Dashboard", layout="wide", page_icon="📊")
+st.set_page_config(page_title="Volume NSE All Stock Dashboard", layout="wide", page_icon="📊")
 
 # ==========================================
 # 🔐 ADMIN LOGIN SYSTEM
 # ==========================================
-ADMIN_PASSWORD = "admin"
+ADMIN_PASSWORD = "dada"
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -42,7 +42,7 @@ if not st.session_state.logged_in:
 # ==========================================
 # 🌍 GLOBAL MARKET TICKER (TRADINGVIEW)
 # ==========================================
-st.title("📊 NSE Stock Market Dashboard")
+st.title("📊 Volume NSE All Stock Market Dashboard")
 st.caption(f"Data refreshed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 components.html("""
@@ -90,7 +90,7 @@ def load_sheet_data_with_colors(sheet_name):
         creds = Credentials.from_service_account_info(service_account_info, scopes=scope)
         client = gspread.authorize(creds)
         
-        spreadsheet_id = "1SFhuZbLLlwwFsNo1k2RRx_Zp6bAkRR20W0F_zTwgdwU"
+        spreadsheet_id = "1Sv5UhBbaXyG6-3_bohCNpJOyxZU8s8FKI3JfIwQMjjM"
         encoded_sheet = urllib.parse.quote(sheet_name)
         
         authed_session = AuthorizedSession(creds)
@@ -220,7 +220,7 @@ search_query = st.sidebar.text_input("Search by Symbol, Name, etc...", key="sear
 
 st.sidebar.markdown("---")
 st.sidebar.header("📑 Select a Tab")
-sheet_names = ["Top 250 Stocks", "Final List", "Final List 2", "Diff @ 200 DMA", "+%", "-%"]
+sheet_names = ["Top 250 Stocks","NSE Fundamentals", "Final List", "Final List 2", "-Diff @ 200 DMA", "+Diff @ 200 DMA", "52W Low-GTT", "+%", "-%"]
 selected_sheet = st.sidebar.selectbox("Choose sheet", sheet_names, key="filter_sheet")
 
 # ---------- Main Execution ----------
