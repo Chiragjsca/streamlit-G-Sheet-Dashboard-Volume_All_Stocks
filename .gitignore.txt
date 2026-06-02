@@ -1,0 +1,9 @@
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Byte-compiled / build files
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
