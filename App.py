@@ -19,7 +19,7 @@ st.set_page_config(page_title="Volume NSE All Stock Dashboard", layout="wide", p
 # ==========================================
 # 🔐 ADMIN LOGIN SYSTEM
 # ==========================================
-ADMIN_PASSWORD = "dada"
+ADMIN_PASSWORD = "lalo"
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
