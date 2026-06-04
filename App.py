@@ -83,7 +83,7 @@ st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
 # ==========================================
 # 🔐 ADMIN LOGIN SYSTEM
 # ==========================================
-ADMIN_PASSWORD = "lalo"
+ADMIN_PASSWORD = "dada"
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -142,78 +142,32 @@ def rgb_to_hex(color_dict):
 @st.cache_data(ttl=300)
 def load_sheet_data_with_colors(sheet_name):
     try:
-        # ── Step 1: secrets check ──────────────────────────────────────────
         if "gcp_service_account" not in st.secrets:
-            st.error("❌ STEP 1 FAILED — 'gcp_service_account' block not found in secrets.toml. "
-                     "Make sure the file is at `.streamlit/secrets.toml` and the header is exactly `[gcp_service_account]`.")
+            st.error("Missing 'gcp_service_account' in secrets.")
             return pd.DataFrame()
 
         service_account_info = st.secrets["gcp_service_account"]
         if isinstance(service_account_info, str):
-            try:
-                service_account_info = json.loads(service_account_info)
-            except Exception as parse_err:
-                st.error(f"❌ STEP 1b FAILED — Could not parse gcp_service_account as JSON: {parse_err}")
-                return pd.DataFrame()
+            service_account_info = json.loads(service_account_info)
 
-        # ── Step 2: build credentials ──────────────────────────────────────
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        try:
-            creds = Credentials.from_service_account_info(service_account_info, scopes=scope)
-        except Exception as cred_err:
-            st.error(f"❌ STEP 2 FAILED — Could not build Google credentials: {cred_err}. "
-                     "Check that private_key, client_email, and project_id are correct in secrets.toml.")
-            return pd.DataFrame()
+        creds = Credentials.from_service_account_info(service_account_info, scopes=scope)
+        client = gspread.authorize(creds)
 
-        # ── Step 3: call Sheets API ────────────────────────────────────────
         spreadsheet_id = "1Sv5UhBbaXyG6-3_bohCNpJOyxZU8s8FKI3JfIwQMjjM"
         encoded_sheet = urllib.parse.quote(sheet_name)
+
         authed_session = AuthorizedSession(creds)
-        url = (f"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}"
-               f"?includeGridData=true&ranges={encoded_sheet}")
+        url = f"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}?includeGridData=true&ranges={encoded_sheet}"
+        response = authed_session.get(url)
+        data = response.json()
 
-        try:
-            response = authed_session.get(url)
-            data = response.json()
-        except Exception as req_err:
-            st.error(f"❌ STEP 3 FAILED — HTTP request to Sheets API failed: {req_err}")
-            return pd.DataFrame()
+        if 'error' in data: return pd.DataFrame()
+        if 'sheets' not in data or not data['sheets']: return pd.DataFrame()
 
-        if 'error' in data:
-            err = data['error']
-            code = err.get('code', '?')
-            msg  = err.get('message', str(err))
-            if code == 403:
-                st.error(
-                    f"❌ STEP 3 FAILED — 403 Permission Denied.\n\n"
-                    f"**Fix:** Share your Google Sheet with this service account email and give it Viewer/Editor access:\n\n"
-                    f"`{service_account_info.get('client_email', 'unknown')}`\n\n"
-                    f"API message: {msg}"
-                )
-            elif code == 404:
-                st.error(
-                    f"❌ STEP 3 FAILED — 404 Spreadsheet Not Found.\n\n"
-                    f"Spreadsheet ID in code: `{spreadsheet_id}`\n"
-                    f"Check the ID matches the URL of your Google Sheet."
-                )
-            else:
-                st.error(f"❌ STEP 3 FAILED — Sheets API error {code}: {msg}")
-            return pd.DataFrame()
-
-        if 'sheets' not in data or not data['sheets']:
-            st.error(
-                f"❌ STEP 4 FAILED — Sheet tab `{sheet_name}` not found in the spreadsheet.\n\n"
-                f"Available tabs must match exactly (case-sensitive). "
-                f"Check the tab is named exactly **{sheet_name}**."
-            )
-            return pd.DataFrame()
-
-        # ── Step 4: parse rows ─────────────────────────────────────────────
         sheet_data = data['sheets'][0]['data'][0]
         row_data = sheet_data.get('rowData', [])
-        if not row_data:
-            st.error(f"❌ STEP 4 FAILED — Sheet `{sheet_name}` exists but has no row data (empty sheet).")
-            return pd.DataFrame()
+        if not row_data: return pd.DataFrame()
 
         values_list, bg_colors_list, txt_colors_list = [], [], []
 
@@ -248,12 +202,7 @@ def load_sheet_data_with_colors(sheet_name):
             df[f"_txt_{col}"] = [row[i] if i < len(row) else "#000000" for row in txt_colors_list[1:]]
 
         return df
-
     except Exception as e:
-        import traceback
-        st.error(f"❌ UNEXPECTED ERROR loading sheet `{sheet_name}`:\n\n"
-                 f"`{type(e).__name__}: {e}`\n\n"
-                 f"```\n{traceback.format_exc()}\n```")
         return pd.DataFrame()
 
 def process_hyperlinks(df, symbol_col):
@@ -494,7 +443,7 @@ search_query = st.sidebar.text_input("Search by Symbol, Name, etc...", key="sear
 
 st.sidebar.markdown("---")
 st.sidebar.header("📑 Select a Tab")
-sheet_names = ["Top 250 Stocks","NSE Fundamentals", "Final List", "Final List 2", "-Diff @ 200 DMA", "+Diff @ 200 DMA", "52W Low-GTT", "+%", "-%"]
+sheet_names = ["Top 250 Stocks", "Final List", "Final List 2", "-Diff @ 200 DMA", "+Diff @ 200 DMA", "52W Low-GTT", "+%", "-%","NSE Fundamentals"]
 selected_sheet = st.sidebar.selectbox("Choose sheet", sheet_names, key="filter_sheet")
 
 # ---------- Main Execution ----------
@@ -1366,4 +1315,4 @@ Be specific, data-driven, and actionable for a retail investor.
                 st.markdown(f"<a href='{url}' target='_blank' style='text-decoration:none;'><div style='background-color:#f39991; padding:8px; margin:4px; border-radius:5px; color:#000000; font-weight:bold;'>{clean_s}: {v}%</div></a>", unsafe_allow_html=True)
 
 else:
-    st.info("⏳ Waiting for data... Scroll up — the exact error with fix instructions is shown above.")
+    st.warning("No data loaded. Check sheet sharing and secrets.")
