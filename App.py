@@ -80,6 +80,12 @@ hide_streamlit_ui = """
 """
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
 
+import streamlit as st
+from datetime import datetime
+
+import streamlit as st
+from datetime import datetime
+
 # ==========================================
 # 🔐 ADMIN LOGIN SYSTEM
 # ==========================================
@@ -89,7 +95,10 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    st.markdown("<h1 style='text-align: center; margin-top: 100px;'>🔐 Admin Login</h1>", unsafe_allow_html=True)
+    # Top hint
+    st.markdown("<p style='text-align: center; margin-top: 100px; color: Green; font-size: 18px;'>250-Volume Breakout Dashboard</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; margin-top: 0px; font-size: 20px;'>🔐 Admin Login</h1>", unsafe_allow_html=True)
+    
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
         with st.form("login_form"):
@@ -100,36 +109,106 @@ if not st.session_state.logged_in:
                     st.session_state.logged_in = True
                     st.rerun()
                 else:
-                    st.error("❌ Incorrect Password. Please try again.")
+                    st.error("Password इल्ले 😂 इल्ले, खम्मा घणी भाईसा, सॉरी। तुमसे सब कुछ हो पाएगा ! कैसे मिली 🤪 इस वेबसाइट छोड़ दो")
+    
+    # Your dynamic bottom hint
+    dynamic_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    st.markdown(f"<p style='text-align: center; color: gray; font-size: 14px; margin-top: 20px;'>Data refreshed: {dynamic_time}</p>", unsafe_allow_html=True)
+
     st.stop()
 
 # ==========================================
-# 🌍 GLOBAL MARKET TICKER (TRADINGVIEW)
+# 🌍 GLOBAL MARKET TICKER (LIVE DATA GRID)
 # ==========================================
+import yfinance as yf
+import streamlit as st
+from datetime import datetime
+
 st.markdown("<p style='font-size:0.85rem; font-weight:bold; margin:0; padding:0;'>📊 Top 250 NSE Stock-Volume Breakout Dashboard</p>", unsafe_allow_html=True)
 st.caption(f"Data refreshed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-components.html("""
-<div class="tradingview-widget-container">
-  <div class="tradingview-widget-container__widget"></div>
-  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-  {
-  "symbols": [
-    {"proName": "NSE:NIFTY", "title": "Nifty 50"},
-    {"proName": "NSE:BANKNIFTY", "title": "Bank Nifty"},
-    {"proName": "BSE:SENSEX", "title": "Sensex"},
-    {"proName": "NSE:CNXIT", "title": "Nifty IT"},
-    {"proName": "NSE:CNXAUTO", "title": "Nifty Auto"}
-  ],
-  "showSymbolLogo": true,
-  "isTransparent": true,
-  "displayMode": "adaptive",
-  "colorTheme": "dark",
-  "locale": "en"
-}
-  </script>
-</div>
-""", height=70)
+@st.cache_data(ttl=60)
+def get_live_index_data():
+    symbols = {
+        "NIFTY 50": "^NSEI",
+        "NIFTY NEXT 50": "^NN50",
+        "NIFTY MIDCAP 50": "^NSEMDCP50",
+        "NIFTY MIDCAP 100": "^CRSLMID",
+        "NIFTY MIDCAP 150": "UNSUPPORTED", 
+        "NIFTY SMLCAP 50": "UNSUPPORTED",
+        "NIFTY SMLCAP 100": "UNSUPPORTED",
+        "NIFTY SMLCAP 250": "UNSUPPORTED",
+        "NIFTY MIDSML 400": "UNSUPPORTED",
+        "NIFTY 100": "^CNX100",
+        "NIFTY 200": "^CNX200",
+        "NIFTY500 MULTI...": "UNSUPPORTED",
+        "NIFTY LARGEMID...": "UNSUPPORTED",
+        "NIFTY MID SELE...": "UNSUPPORTED",
+        "NIFTY TOTAL MK...": "UNSUPPORTED",
+        "NIFTY MICROCAP...": "UNSUPPORTED",
+        "NIFTY 500": "^CRSLDX",
+        "NIFTY FPI 150": "UNSUPPORTED",
+        "NIFTY500 LMS E...": "UNSUPPORTED",
+        "NIFTY MIDSMALL...": "UNSUPPORTED",
+        "NIFTY SMALLCAP...": "UNSUPPORTED"
+    }
+    
+    data_grid = {}
+    for name, ticker_code in symbols.items():
+        if ticker_code == "UNSUPPORTED":
+            data_grid[name] = {"price": "No Data", "change": 0.0}
+            continue
+            
+        try:
+            ticker = yf.Ticker(ticker_code)
+            hist = ticker.history(period="5d")
+            
+            if not hist.empty and len(hist) >= 2:
+                live_price = float(hist['Close'].iloc[-1])
+                prev_close = float(hist['Close'].iloc[-2])
+                pct_change = ((live_price - prev_close) / prev_close) * 100
+                data_grid[name] = {"price": f"{live_price:,.2f}", "change": pct_change}
+            else:
+                data_grid[name] = {"price": "Loading...", "change": 0.0}
+        except Exception:
+            data_grid[name] = {"price": "Error", "change": 0.0}
+            
+    return data_grid
+
+live_data = get_live_index_data()
+
+cards_html = "<div style='display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-family: system-ui, -apple-system, sans-serif;'>"
+
+# Keep track of how many cards we actually printed
+valid_cards_count = 0 
+
+for name, info in live_data.items():
+    
+    # 👇 NEW LOGIC: If the data is bad, skip this block completely!
+    if info["price"] in ["No Data", "Loading...", "Error"]:
+        continue
+        
+    valid_cards_count += 1
+    bg_color = "#66bb6a" if info["change"] >= 0 else "#ef5350"
+    change_sign = "+" if info["change"] >= 0 else ""
+    
+    cards_html += f"<div style='background-color: {bg_color}; color: white; padding: 12px 16px; border-radius: 8px; flex: 1 1 calc(16.66% - 10px); min-width: 140px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);'>"
+    cards_html += f"<div style='font-size: 11px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; margin-bottom: 6px; text-transform: uppercase;'>{name}</div>"
+    cards_html += f"<div style='display: flex; justify-content: space-between; align-items: baseline;'>"
+    cards_html += f"<span style='font-size: 15px; font-weight: 700;'>{info['price']}</span>"
+    cards_html += f"<span style='font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 4px;'>{change_sign}{info['change']:.2f}%</span>"
+    cards_html += f"</div></div>"
+
+cards_html += "</div>"
+
+with st.expander("📈 Click to view Live Market Indices", expanded=False):
+    # Failsafe: If Yahoo Finance is completely down and NO cards rendered, show a friendly message
+    if valid_cards_count == 0:
+        st.info("Market data is currently unavailable. Please check back later.")
+    else:
+        st.markdown(cards_html, unsafe_allow_html=True)
+
+st.write("---")
 
 # ==========================================
 # 🛠️ HELPER FUNCTIONS
@@ -282,6 +361,342 @@ def clean_for_export(df):
     for col in export_df.select_dtypes(include=['object']).columns:
         export_df[col] = export_df[col].apply(lambda x: re.sub(r'<[^>]*>', '', str(x)) if pd.notnull(x) else x)
     return export_df
+
+import streamlit.components.v1 as components
+
+# ==========================================
+# 🌍 NATIONAL EXCHANGE SCANNER (ALL NSE/BSE)
+# ==========================================
+st.markdown("<p style='font-size:0.85rem; font-weight:bold; margin:0; padding:0;'>🌍 National Exchange Scanner (All NSE/BSE Stocks)</p>", unsafe_allow_html=True)
+st.caption("Live market data covering 2,000+ equities. Powered by TradingView.")
+
+with st.expander("🏆 Click to view Full-Market India Rankings", expanded=False):
+    
+    # Create the tabs based on your requested list
+    nse_tab1, nse_tab2, nse_tab3, nse_tab4, nse_tab5 = st.tabs([
+        "🚀 Gainers & Losers", 
+        "📦 Volume & Active", 
+        "⭐ 52W High / Low", 
+        "🔄 52W Reversals",
+        "📊 Top 100 Traded"
+    ])
+
+    # Helper function to generate clean TradingView iframes dynamically
+    def render_tv_widget(screen_type):
+        return f"""
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+          {{
+          "width": "100%",
+          "height": "500",
+          "defaultColumn": "overview",
+          "defaultScreen": "{screen_type}",
+          "market": "india",
+          "showToolbar": true,
+          "colorTheme": "light",
+          "locale": "en"
+        }}
+          </script>
+        </div>
+        """
+
+    # 1st Tab: Gainers / Losers
+    with nse_tab1:
+        colA, colB = st.columns(2)
+        with colA:
+            st.markdown("<p style='font-size:14px; font-weight:bold;'>🚀 Top Gainers</p>", unsafe_allow_html=True)
+            components.html(render_tv_widget("top_gainers"), height=520)
+        with colB:
+            st.markdown("<p style='font-size:14px; font-weight:bold;'>🔻 Top Losers</p>", unsafe_allow_html=True)
+            components.html(render_tv_widget("top_losers"), height=520)
+            
+    # 2nd & 3rd Tabs Combined: Volume Leaders & Most Active (Turnover/Value)
+    with nse_tab2:
+        colA, colB = st.columns(2)
+        with colA:
+            st.markdown("<p style='font-size:14px; font-weight:bold;'>📦 Volume Leaders</p>", unsafe_allow_html=True)
+            components.html(render_tv_widget("volume_leaders"), height=520)
+        with colB:
+            st.markdown("<p style='font-size:14px; font-weight:bold;'>🔥 Most Active (Volume & Value)</p>", unsafe_allow_html=True)
+            components.html(render_tv_widget("most_active"), height=520)
+            
+    # 7th Tab: 52 Week High / Low
+    with nse_tab3:
+        colA, colB = st.columns(2)
+        with colA:
+            st.markdown("<p style='font-size:14px; font-weight:bold;'>⭐ New 52-Week Highs</p>", unsafe_allow_html=True)
+            components.html(render_tv_widget("new_52wk_high"), height=520)
+        with colB:
+            st.markdown("<p style='font-size:14px; font-weight:bold;'>⭐ New 52-Week Lows</p>", unsafe_allow_html=True)
+            components.html(render_tv_widget("new_52wk_low"), height=520)
+            
+    # 8th Tab: Reversals from 52W High/Low
+    with nse_tab4:
+        colA, colB = st.columns(2)
+        with colA:
+            st.markdown("<p style='font-size:14px; font-weight:bold;'>📈 Outperforming 52W High (Reversal Up)</p>", unsafe_allow_html=True)
+            components.html(render_tv_widget("outperforming_52wk_high"), height=520)
+        with colB:
+            st.markdown("<p style='font-size:14px; font-weight:bold;'>📉 Underperforming 52W Low (Reversal Down)</p>", unsafe_allow_html=True)
+            components.html(render_tv_widget("underperforming_52wk_low"), height=520)
+            
+    # 9th Tab: Top 100 Traded (Full Screener)
+    with nse_tab5:
+        st.markdown("<p style='font-size:14px; font-weight:bold;'>📊 Top 100+ Stocks Traded (Full India Screener)</p>", unsafe_allow_html=True)
+        # Using the general screen so users can sort by turnover, volume, or rating manually
+        components.html(render_tv_widget("general"), height=520)
+
+st.write("---")
+
+# ==========================================
+# 🏢 TOP 250 STOCKS TICKER (SHEET DATA GRID)
+# ==========================================
+@st.cache_data(ttl=300)
+def get_sheet_stocks_data():
+    # Fetching strictly from the requested tab
+    df = load_sheet_data_with_colors("Top 250 Stocks")
+    data_grid = {}
+    
+    if df.empty:
+        return data_grid
+        
+    actual_cols = [c for c in df.columns if not c.startswith("_bg_") and not c.startswith("_txt_")]
+    
+    # Dynamically find the symbol, cmp, and % change columns
+    sym_col = next((c for c in actual_cols if c.lower() in ["nse code", "symbol", "ticker", "stock symbol", "id", "stock"]), None)
+    cmp_col = next((c for c in actual_cols if "cmp" in c.lower()), None)
+    pct_col = next((c for c in actual_cols if "price %" in c.lower() or "change" in c.lower()), None)
+    
+    if not sym_col or not cmp_col:
+        return data_grid
+        
+    for _, row in df.iterrows():
+        sym = str(row.get(sym_col, "")).strip()
+        if not sym or sym == "nan":
+            continue
+            
+        raw_cmp = str(row.get(cmp_col, "")).replace(",", "").strip()
+        raw_pct = str(row.get(pct_col, "0")).replace("%", "").replace(",", "").strip() if pct_col else "0"
+        
+        # Validate Price
+        try:
+            price_val = float(raw_cmp)
+            price_str = f"{price_val:,.2f}"
+        except ValueError:
+            price_str = "No Data"
+            
+        # Validate % Change
+        try:
+            pct_val = float(raw_pct)
+        except ValueError:
+            pct_val = 0.0
+            
+        data_grid[sym] = {"price": price_str, "change": pct_val}
+        
+    return data_grid
+
+sheet_live_data = get_sheet_stocks_data()
+
+sheet_cards_html = "<div style='display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-family: system-ui, -apple-system, sans-serif;'>"
+
+# Keep track of valid cards
+sheet_valid_cards_count = 0 
+
+for name, info in sheet_live_data.items():
+    
+    # 👇 LOGIC: Hide HTML box entirely if the price is bad
+    if info["price"] in ["No Data", "Loading...", "Error"]:
+        continue
+        
+    sheet_valid_cards_count += 1
+    bg_color = "#66bb6a" if info["change"] >= 0 else "#ef5350"
+    change_sign = "+" if info["change"] >= 0 else ""
+    
+    sheet_cards_html += f"<div style='background-color: {bg_color}; color: white; padding: 12px 16px; border-radius: 8px; flex: 1 1 calc(16.66% - 10px); min-width: 140px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);'>"
+    sheet_cards_html += f"<div style='font-size: 11px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; margin-bottom: 6px; text-transform: uppercase;'>{name}</div>"
+    sheet_cards_html += f"<div style='display: flex; justify-content: space-between; align-items: baseline;'>"
+    sheet_cards_html += f"<span style='font-size: 15px; font-weight: 700;'>{info['price']}</span>"
+    sheet_cards_html += f"<span style='font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 4px;'>{change_sign}{info['change']:.2f}%</span>"
+    sheet_cards_html += f"</div></div>"
+
+sheet_cards_html += "</div>"
+
+with st.expander("📈 Click to view Top 250 Stocks Matrix", expanded=False):
+    # Failsafe if the sheet is completely empty or all rows returned "No Data"
+    if sheet_valid_cards_count == 0:
+        st.info("Stock matrix data is currently unavailable. Please check the 'Top 250 Stocks' sheet.")
+    else:
+        st.markdown(sheet_cards_html, unsafe_allow_html=True)
+
+st.write("---")
+
+# ==========================================
+# 🏆 TOP 250 STOCKS RANKING DASHBOARDS
+# ==========================================
+@st.cache_data(ttl=300)
+def get_ranked_sheet_data():
+    df = load_sheet_data_with_colors("Top 250 Stocks")
+    if df.empty:
+        return pd.DataFrame()
+        
+    actual_cols = [c for c in df.columns if not c.startswith("_bg_") and not c.startswith("_txt_")]
+    
+    sym_col = next((c for c in actual_cols if c.lower() in ["nse code", "symbol", "ticker", "stock symbol", "id", "stock"]), None)
+    cmp_col = next((c for c in actual_cols if "cmp" in c.lower()), None)
+    pct_col = next((c for c in actual_cols if "price %" in c.lower() or "change" in c.lower()), None)
+    vol_col = next((c for c in actual_cols if "volume" in c.lower()), None)
+    
+    # Look for specific Value and Turnover columns
+    value_col = next((c for c in actual_cols if "value" in c.lower() and "face" not in c.lower() and "enterprise" not in c.lower()), None)
+    turnover_col = next((c for c in actual_cols if "turnover" in c.lower()), None)
+    
+    if not sym_col:
+        return pd.DataFrame()
+        
+    # Extract and clean only the necessary columns for sorting
+    rank_df = pd.DataFrame()
+    rank_df['Symbol'] = df[sym_col].astype(str).str.strip()
+    
+    rank_df['CMP'] = pd.to_numeric(df[cmp_col].astype(str).str.replace(r'[%,]', '', regex=True), errors='coerce') if cmp_col else 0.0
+    rank_df['Pct_Change'] = pd.to_numeric(df[pct_col].astype(str).str.replace(r'[%,]', '', regex=True), errors='coerce') if pct_col else 0.0
+    rank_df['Volume'] = pd.to_numeric(df[vol_col].astype(str).str.replace(r'[%,]', '', regex=True), errors='coerce') if vol_col else 0.0
+
+    # Handle Value and Turnover (Use exact columns if they exist, otherwise calculate CMP * Volume)
+    fallback_calc = rank_df['CMP'] * rank_df['Volume']
+    
+    if value_col:
+        rank_df['Value'] = pd.to_numeric(df[value_col].astype(str).str.replace(r'[a-zA-Z%, ]', '', regex=True), errors='coerce')
+    else:
+        rank_df['Value'] = fallback_calc
+        
+    if turnover_col:
+        rank_df['Turnover'] = pd.to_numeric(df[turnover_col].astype(str).str.replace(r'[a-zA-Z%, ]', '', regex=True), errors='coerce')
+    else:
+        rank_df['Turnover'] = fallback_calc
+    
+    # Drop rows that don't have valid symbols or prices
+    rank_df = rank_df.dropna(subset=['Symbol', 'CMP']).reset_index(drop=True)
+    rank_df = rank_df[(rank_df['Symbol'] != 'nan') & (rank_df['Symbol'] != '')]
+    
+    return rank_df
+
+def build_ranking_cards_html(dataframe, metric_label="change"):
+    cards_html = "<div style='display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; font-family: system-ui, -apple-system, sans-serif;'>"
+    
+    if dataframe.empty:
+        return "<p style='color: gray; font-size: 14px;'>No data available for this ranking.</p>"
+        
+    for _, row in dataframe.iterrows():
+        sym = row['Symbol']
+        price = row['CMP']
+        pct = row['Pct_Change']
+        
+        bg_color = "#66bb6a" if pct >= 0 else "#ef5350"
+        change_sign = "+" if pct >= 0 else ""
+        
+        # Decide what the pill displays based on the metric_label
+        if metric_label == "volume":
+            vol = row.get('Volume', 0)
+            pill_text = f"Vol: {vol/1000000:.1f}M" if vol >= 1000000 else f"Vol: {vol:,.0f}"
+            
+        elif metric_label == "value":
+            val = row.get('Value', 0)
+            pill_text = f"Val: ₹{val/10000000:,.1f}Cr" if val >= 10000000 else f"Val: ₹{val:,.0f}"
+            
+        elif metric_label == "turnover":
+            to = row.get('Turnover', 0)
+            pill_text = f"T.O: ₹{to/10000000:,.1f}Cr" if to >= 10000000 else f"T.O: ₹{to:,.0f}"
+            
+        elif metric_label == "vol_val":
+            # Custom dual-metric pill for "Most Active by Volume & Value"
+            vol = row.get('Volume', 0)
+            val = row.get('Value', 0)
+            v_str = f"{vol/1000000:.1f}M" if vol >= 1000000 else f"{vol/1000:.1f}k"
+            val_str = f"₹{val/10000000:,.1f}Cr" if val >= 10000000 else f"₹{val:,.0f}"
+            pill_text = f"📦 {v_str} | 💰 {val_str}"
+            
+        else:
+            pill_text = f"{change_sign}{pct:.2f}%"
+
+        cards_html += f"<div style='background-color: {bg_color}; color: white; padding: 12px 16px; border-radius: 8px; flex: 1 1 calc(16.66% - 10px); min-width: 140px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);'>"
+        cards_html += f"<div style='font-size: 11px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; margin-bottom: 6px; text-transform: uppercase;'>{sym}</div>"
+        cards_html += f"<div style='display: flex; justify-content: space-between; align-items: baseline;'>"
+        cards_html += f"<span style='font-size: 15px; font-weight: 700;'>{price:,.2f}</span>"
+        cards_html += f"<span style='font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 4px; white-space: nowrap;'>{pill_text}</span>"
+        cards_html += f"</div></div>"
+        
+    cards_html += "</div>"
+    return cards_html
+
+# Fetch Data
+rank_data = get_ranked_sheet_data()
+
+with st.expander("🏆 Click to view Advanced Ranking Dashboards (Top 250 Stocks)", expanded=False):
+    if rank_data.empty:
+        st.info("Ranking data is currently unavailable. Please check the 'Top 250 Stocks' sheet.")
+    else:
+        # 1. Top 20 Gainers/Losers
+        df_gainers = rank_data.nlargest(20, 'Pct_Change')
+        df_losers = rank_data.nsmallest(20, 'Pct_Change')
+        
+        # 2. Top 20 Volume Gainers/Losers
+        df_vol_gainers = rank_data.nlargest(20, 'Volume')
+        df_vol_losers = rank_data[rank_data['Volume'] > 0].nsmallest(20, 'Volume')
+        
+        # 3. Most Active by Volume & Value (Sorted by Volume, displaying both)
+        df_active_vol_val = rank_data.nlargest(20, 'Volume') 
+        
+        # 4. Most Active by Value
+        df_top_value = rank_data.nlargest(20, 'Value')
+        
+        # 5. Top by Turnover
+        df_top_turnover = rank_data.nlargest(20, 'Turnover')
+        
+        # 6. Recreating the Most Active variable from Dashboard-1 logic
+        df_most_active = rank_data.nlargest(20, 'Value')
+        
+        # Create Tabs for the 6 categories
+        rank_tab1, rank_tab2, rank_tab3, rank_tab4, rank_tab5, rank_tab6 = st.tabs([
+            "📈 Gainers/Losers", 
+            "📦 Volume Leaders", 
+            "🔥 Active (Vol & Val)", 
+            "💰 Top by Value", 
+            "💎 Top by Turnover",
+            "💰 Most Active"
+        ])
+        
+        with rank_tab1:
+            st.markdown("<p style='font-size:14px; font-weight:bold; margin-top:10px;'>🚀 Top 20 Gainers</p>", unsafe_allow_html=True)
+            st.markdown(build_ranking_cards_html(df_gainers, "change"), unsafe_allow_html=True)
+            
+            st.markdown("<p style='font-size:14px; font-weight:bold; margin-top:10px;'>🔻 Top 20 Losers</p>", unsafe_allow_html=True)
+            st.markdown(build_ranking_cards_html(df_losers, "change"), unsafe_allow_html=True)
+            
+        with rank_tab2:
+            st.markdown("<p style='font-size:14px; font-weight:bold; margin-top:10px;'>📦 Top 20 by Volume</p>", unsafe_allow_html=True)
+            st.markdown(build_ranking_cards_html(df_vol_gainers, "volume"), unsafe_allow_html=True)
+            
+            st.markdown("<p style='font-size:14px; font-weight:bold; margin-top:10px;'>💤 Bottom 20 by Volume</p>", unsafe_allow_html=True)
+            st.markdown(build_ranking_cards_html(df_vol_losers, "volume"), unsafe_allow_html=True)
+            
+        with rank_tab3:
+            st.markdown("<p style='font-size:14px; font-weight:bold; margin-top:10px;'>🔥 Most Active Stocks (Volume & Traded Value)</p>", unsafe_allow_html=True)
+            st.markdown(build_ranking_cards_html(df_active_vol_val, "vol_val"), unsafe_allow_html=True)
+            
+        with rank_tab4:
+            st.markdown("<p style='font-size:14px; font-weight:bold; margin-top:10px;'>💰 Most Active by Traded Value</p>", unsafe_allow_html=True)
+            st.markdown(build_ranking_cards_html(df_top_value, "value"), unsafe_allow_html=True)
+            
+        with rank_tab5:
+            st.markdown("<p style='font-size:14px; font-weight:bold; margin-top:10px;'>💎 Highest Market Turnover</p>", unsafe_allow_html=True)
+            st.markdown(build_ranking_cards_html(df_top_turnover, "turnover"), unsafe_allow_html=True)
+
+        with rank_tab6:
+            st.markdown("<p style='font-size:14px; font-weight:bold; margin-top:10px;'>💰 Most Active (Highest Traded Value)</p>", unsafe_allow_html=True)
+            st.markdown(build_ranking_cards_html(df_most_active, "value"), unsafe_allow_html=True)
+
+st.write("---")
 
 # ==========================================
 # 🔬 BOTTOM FISHING SCANNER — helper
