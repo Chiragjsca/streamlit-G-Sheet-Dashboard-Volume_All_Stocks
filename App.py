@@ -96,7 +96,7 @@ if "logged_in" not in st.session_state:
 
 if not st.session_state.logged_in:
     # Top hint
-    st.markdown("<p style='text-align: center; margin-top: 100px; color: Pink; font-size: 18px;'>All-Volume Breakout Dashboard</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; margin-top: 100px; color: Green; font-size: 18px;'>All-V Dashboard</p>", unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center; margin-top: 0px; font-size: 20px;'>🔐 Admin Login</h1>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 1, 1])
@@ -109,7 +109,15 @@ if not st.session_state.logged_in:
                     st.session_state.logged_in = True
                     st.rerun()
                 else:
-                    st.error("Password इल्ले 😂 इल्ले, खम्मा घणी भाईसा, सॉरी। तुमसे सब कुछ हो पाएगा ! कैसे मिली 🤪 इस वेबसाइट छोड़ दो")
+                    import random
+                    password_errors = [
+                        "Password इल्ले! 😅 इल्ले!, खम्मा घणी भाईसा, सॉरी। तुमसे सब कुछ हो पाएगा! यहां बहुत 🤪 दिमाग मत लगाओ, इस वेबसाइट को नहीं, 😂 इस गलत पासवर्ड को छोड़ दो!",
+                        "❌ Password इल्ले भाईसा! 😅 इल्ले! खम्मा घणी, सॉरी। तुम बाहुबली हो, तुमसे सब कुछ हो पाएगा! पर यहाँ फालतू 🤪 दिमाग मत लगाओ। अपनी सुंदर वेबसाइट को नहीं, 😂 इस सड़े हुए गलत पासवर्ड को छोड़ दो!",
+                        "❌ खम्मा घणी भाईसा, Password इल्ले! 😅 sorry! तुम तो मंगल ग्रह पर पानी खोज सकते हो, तुमसे सब कुछ हो पाएगा! पर यहाँ ज़्यादा 🤪 दिमाग मत लगाओ। इस सीधे-सादे वेबसाइट को नहीं, 😂 इस जाली पासवर्ड को छोड़ दो!",
+                        "❌ Password इल्ले! 😅 इल्ले! खम्मा घणी भाईसा, सॉरी। लोड मत लो, तुमसे सब कुछ हो पाएगा! पर यहाँ फालतू 🤪 दिमाग मत लगाओ। दुनिया छोड़ दो, मोक्ष पकड़ लो, पर पहले 😂 इस गलत पासवर्ड को छोड़ दो!",
+                        "❌ अरे भाईसा! Password इल्ले! 😅 खम्मा घणी, सॉरी। तुम चाहो तो सिस्टम हिला सकते हो, तुमसे सब कुछ हो पाएगा! पर यहाँ ज़्यादा 🤪 दिमाग मत लगाओ। इस निर्दोष वेबसाइट को नहीं, 😂 इस भूतिया गलत पासवर्ड को छोड़ दो!"
+                    ]
+                    st.error(random.choice(password_errors))
     
     # Your dynamic bottom hint
     dynamic_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -124,7 +132,7 @@ import yfinance as yf
 import streamlit as st
 from datetime import datetime
 
-st.markdown("<p style='font-size:0.85rem; font-weight:bold; margin:0; padding:0;'>📊 All Stock-Volume Breakout Dashboard</p>", unsafe_allow_html=True)
+st.markdown("<p style='font-size:0.85rem; font-weight:bold; margin:0; padding:0;'>📊 Top 250 NSE Stock-Volume Breakout Dashboard</p>", unsafe_allow_html=True)
 st.caption(f"Data refreshed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 @st.cache_data(ttl=60)
@@ -191,13 +199,15 @@ for name, info in live_data.items():
     valid_cards_count += 1
     bg_color = "#66bb6a" if info["change"] >= 0 else "#ef5350"
     change_sign = "+" if info["change"] >= 0 else ""
-    
+    index_nse_url = "https://www.nseindia.com/market-data/live-market-indices"
+
+    cards_html += f"<a href='{index_nse_url}' target='_blank' style='text-decoration:none;'>"
     cards_html += f"<div style='background-color: {bg_color}; color: white; padding: 12px 16px; border-radius: 8px; flex: 1 1 calc(16.66% - 10px); min-width: 140px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);'>"
     cards_html += f"<div style='font-size: 11px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; margin-bottom: 6px; text-transform: uppercase;'>{name}</div>"
     cards_html += f"<div style='display: flex; justify-content: space-between; align-items: baseline;'>"
     cards_html += f"<span style='font-size: 15px; font-weight: 700;'>{info['price']}</span>"
     cards_html += f"<span style='font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 4px;'>{change_sign}{info['change']:.2f}%</span>"
-    cards_html += f"</div></div>"
+    cards_html += f"</div></div></a>"
 
 cards_html += "</div>"
 
@@ -367,7 +377,7 @@ import streamlit.components.v1 as components
 # ==========================================
 # 🌍 NATIONAL EXCHANGE SCANNER (ALL NSE/BSE)
 # ==========================================
-st.markdown("<p style='font-size:0.85rem; font-weight:bold; margin:0; padding:0;'>🌍 National Exchange Scanner (All NSE/BSE Stocks)</p>", unsafe_allow_html=True)
+st.markdown("### 🌍 National Exchange Scanner (All NSE/BSE Stocks)")
 st.caption("Live market data covering 2,000+ equities. Powered by TradingView.")
 
 with st.expander("🏆 Click to view Full-Market India Rankings", expanded=False):
@@ -512,13 +522,15 @@ for name, info in sheet_live_data.items():
     sheet_valid_cards_count += 1
     bg_color = "#66bb6a" if info["change"] >= 0 else "#ef5350"
     change_sign = "+" if info["change"] >= 0 else ""
+    nse_url = f"https://www.nseindia.com/get-quotes/equity?symbol={name}"
     
+    sheet_cards_html += f"<a href='{nse_url}' target='_blank' style='text-decoration:none;'>"
     sheet_cards_html += f"<div style='background-color: {bg_color}; color: white; padding: 12px 16px; border-radius: 8px; flex: 1 1 calc(16.66% - 10px); min-width: 140px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);'>"
     sheet_cards_html += f"<div style='font-size: 11px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; margin-bottom: 6px; text-transform: uppercase;'>{name}</div>"
     sheet_cards_html += f"<div style='display: flex; justify-content: space-between; align-items: baseline;'>"
     sheet_cards_html += f"<span style='font-size: 15px; font-weight: 700;'>{info['price']}</span>"
     sheet_cards_html += f"<span style='font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 4px;'>{change_sign}{info['change']:.2f}%</span>"
-    sheet_cards_html += f"</div></div>"
+    sheet_cards_html += f"</div></div></a>"
 
 sheet_cards_html += "</div>"
 
@@ -619,12 +631,14 @@ def build_ranking_cards_html(dataframe, metric_label="change"):
         else:
             pill_text = f"{change_sign}{pct:.2f}%"
 
+        nse_url = f"https://www.nseindia.com/get-quotes/equity?symbol={sym}"
+        cards_html += f"<a href='{nse_url}' target='_blank' style='text-decoration:none;'>"
         cards_html += f"<div style='background-color: {bg_color}; color: white; padding: 12px 16px; border-radius: 8px; flex: 1 1 calc(16.66% - 10px); min-width: 140px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);'>"
         cards_html += f"<div style='font-size: 11px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; margin-bottom: 6px; text-transform: uppercase;'>{sym}</div>"
         cards_html += f"<div style='display: flex; justify-content: space-between; align-items: baseline;'>"
         cards_html += f"<span style='font-size: 15px; font-weight: 700;'>{price:,.2f}</span>"
         cards_html += f"<span style='font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 4px; white-space: nowrap;'>{pill_text}</span>"
-        cards_html += f"</div></div>"
+        cards_html += f"</div></div></a>"
         
     cards_html += "</div>"
     return cards_html
@@ -858,7 +872,7 @@ search_query = st.sidebar.text_input("Search by Symbol, Name, etc...", key="sear
 
 st.sidebar.markdown("---")
 st.sidebar.header("📑 Select a Tab")
-sheet_names = ["NSE Fundamentals", "Final List", "Final List 2", "-Diff @ 200 DMA", "+Diff @ 200 DMA", "NSE Price Data", "52W Low-GTT", "+%", "-%"]
+sheet_names = ["Top 250 Stocks", "Final List", "Final List 2", "Diff @ 200 DMA", "+%", "-%"]
 selected_sheet = st.sidebar.selectbox("Choose sheet", sheet_names, key="filter_sheet")
 
 # ---------- Main Execution ----------
@@ -1192,32 +1206,46 @@ if not raw_df.empty:
             ])
 
             with ws_tabs[0]:
-                st.markdown("**NSE Interactive Chart Frame**")
-                components.html(f'<iframe src="https://charting.nseindia.com/?symbol={sym}-EQ" width="100%" height="{box_height}" style="border:none; border-radius:5px;"></iframe>', height=box_height+20)
+                _url0 = f"https://charting.nseindia.com/?symbol={sym}-EQ"
+                st.markdown(f"**NSE Interactive Chart Frame** &nbsp;|&nbsp; [🌐 Open in Browser]({_url0})", unsafe_allow_html=False)
+                st.caption("📱 If frame is blank on mobile, tap the link above to open directly.")
+                components.html(f'<iframe src="{_url0}" width="100%" height="{box_height}" style="border:none; border-radius:5px;"></iframe>', height=box_height+20)
 
             with ws_tabs[1]:
-                st.markdown("**2ND Panel: EquityPandit Historical Matrix Data**")
-                components.html(f'<iframe src="https://www.equitypandit.com/historical-data/{sym.lower()}" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
+                _url1 = f"https://www.equitypandit.com/historical-data/{sym.lower()}"
+                st.markdown(f"**EquityPandit Historical Matrix Data** &nbsp;|&nbsp; [🌐 Open in Browser]({_url1})")
+                st.caption("📱 If frame is blank on mobile, tap the link above to open directly.")
+                components.html(f'<iframe src="{_url1}" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
 
             with ws_tabs[2]:
-                st.markdown("**3RD Panel: Bullish / Bearish Zone Indicator**")
-                components.html(f'<iframe src="https://www.equitypandit.com/share-price/{sym.lower()}#chart" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
+                _url2 = f"https://www.equitypandit.com/share-price/{sym.lower()}#chart"
+                st.markdown(f"**Bullish / Bearish Zone Indicator** &nbsp;|&nbsp; [🌐 Open in Browser]({_url2})")
+                st.caption("📱 If frame is blank on mobile, tap the link above to open directly.")
+                components.html(f'<iframe src="{_url2}" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
 
             with ws_tabs[3]:
-                st.markdown("**4TH Panel: Screener Corporate Filings**")
-                components.html(f'<iframe src="https://www.screener.in/company/{sym}/consolidated/" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
+                _url3 = f"https://www.screener.in/company/{sym}/consolidated/"
+                st.markdown(f"**Screener Corporate Filings** &nbsp;|&nbsp; [🌐 Open in Browser]({_url3})")
+                st.caption("📱 If frame is blank on mobile, tap the link above to open directly.")
+                components.html(f'<iframe src="{_url3}" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
 
             with ws_tabs[4]:
-                st.markdown("**5TH Panel: Zerodha Markets Financial Performance Metrics**")
-                components.html(f'<iframe src="https://zerodha.com/markets/stocks/NSE/{sym}/" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
+                _url4 = f"https://zerodha.com/markets/stocks/NSE/{sym}/"
+                st.markdown(f"**Zerodha Markets Financial Performance Metrics** &nbsp;|&nbsp; [🌐 Open in Browser]({_url4})")
+                st.caption("📱 If frame is blank on mobile, tap the link above to open directly.")
+                components.html(f'<iframe src="{_url4}" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
 
             with ws_tabs[5]:
-                st.markdown("**6TH Panel: MarketSmith India Institutional Trading Evaluation Engine**")
-                components.html(f'<iframe src="https://marketsmithindia.com/mstool/eval/{sym.lower()}/evaluation.jsp" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
+                _url5 = f"https://marketsmithindia.com/mstool/eval/{sym.lower()}/evaluation.jsp"
+                st.markdown(f"**MarketSmith India Institutional Trading Evaluation Engine** &nbsp;|&nbsp; [🌐 Open in Browser]({_url5})")
+                st.caption("📱 If frame is blank on mobile, tap the link above to open directly.")
+                components.html(f'<iframe src="{_url5}" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
 
             with ws_tabs[6]:
-                st.markdown("**7TH Panel: TradingView Comprehensive Asset Market Registry Summary Profile**")
-                components.html(f'<iframe src="https://www.tradingview.com/symbols/{sym}/" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
+                _url6 = f"https://www.tradingview.com/symbols/{sym}/"
+                st.markdown(f"**TradingView Comprehensive Asset Market Registry Summary Profile** &nbsp;|&nbsp; [🌐 Open in Browser]({_url6})")
+                st.caption("📱 If frame is blank on mobile, tap the link above to open directly.")
+                components.html(f'<iframe src="{_url6}" width="100%" height="{box_height}" style="border:none; border-radius:5px; background-color:white;"></iframe>', height=box_height+20)
 
             with ws_tabs[7]:
                 st.markdown(f"### 🤖 Ask Gemini About **{sym}**")
@@ -1424,93 +1452,142 @@ Be specific, data-driven, and actionable for a retail investor.
         "📊 Chartink Screeners", "📋 Chartink Dashboard", "🗾 Chartink Atlas", "📚 Mahesh Kaushik", "💰 EFTI Wealth"
     ])
 
+    # Reusable helper to render a styled "Open in Browser" button above each portal iframe
+    def _portal_btn(url, label="Open in Browser"):
+        return (
+            f"<div style='margin-bottom:8px;'>"
+            f"<a href='{url}' target='_blank' style='"
+            f"display:inline-block; background:#1976d2; color:#fff; font-size:14px; font-weight:600;"
+            f"padding:8px 18px; border-radius:6px; text-decoration:none;'>"
+            f"🌐 {label}</a>"
+            f"<span style='font-size:12px; color:#888; margin-left:12px;'>📱 Mobile: tap button if frame is blank</span>"
+            f"</div>"
+        )
+
     with mkt_tabs[0]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/market-data/most-active-equities)")
-        components.html('<iframe src="https://www.nseindia.com/market-data/most-active-equities" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/market-data/most-active-equities"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[1]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/market-data/volume-gainers-spurts)")
-        components.html('<iframe src="https://www.nseindia.com/market-data/volume-gainers-spurts" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/market-data/volume-gainers-spurts"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[2]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/market-data/top-gainers-losers)")
-        components.html('<iframe src="https://www.nseindia.com/market-data/top-gainers-losers" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/market-data/top-gainers-losers"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[3]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/market-data/52-week-high-equity-market)")
-        components.html('<iframe src="https://www.nseindia.com/market-data/52-week-high-equity-market" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/market-data/52-week-high-equity-market"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[4]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/market-data/stocks-traded)")
-        components.html('<iframe src="https://www.nseindia.com/market-data/stocks-traded" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/market-data/stocks-traded"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[5]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/market-data/advance)")
-        components.html('<iframe src="https://www.nseindia.com/market-data/advance" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/market-data/advance"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[6]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/market-data/pre-open-market-cm-and-emerge-market)")
-        components.html('<iframe src="https://www.nseindia.com/market-data/pre-open-market-cm-and-emerge-market" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/market-data/pre-open-market-cm-and-emerge-market"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[7]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/market-data/upper-band-hitters)")
-        components.html('<iframe src="https://www.nseindia.com/market-data/upper-band-hitters" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/market-data/upper-band-hitters"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[8]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/index-tracker/NIFTY%2050)")
-        components.html('<iframe src="https://www.nseindia.com/index-tracker/NIFTY%2050" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/index-tracker/NIFTY%2050"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[9]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/market-data/all-upcoming-issues-ipo)")
-        components.html('<iframe src="https://www.nseindia.com/market-data/all-upcoming-issues-ipo" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/market-data/all-upcoming-issues-ipo"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[10]:
-        st.markdown("[🌐 Open Matrix](https://www.moneycontrol.com/stocks/market-stats/volume-shockers-nse/)")
-        components.html('<iframe src="https://www.moneycontrol.com/stocks/market-stats/volume-shockers-nse/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://www.moneycontrol.com/stocks/market-stats/volume-shockers-nse/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[11]:
-        st.markdown("[🌐 Open Matrix](https://www.nseindia.com/all-reports/)")
-        components.html('<iframe src="https://www.nseindia.com/all-reports/" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.nseindia.com/all-reports/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[12]:
-        st.markdown("[🌐 Open Matrix](https://www.tradingview.com/scripts/)")
-        components.html('<iframe src="https://www.tradingview.com/scripts/" width="100%" height="500" style="border:none;"></iframe>', height=520)
+        _u = "https://www.tradingview.com/scripts/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none;"></iframe>', height=520)
     with mkt_tabs[13]:
-        st.markdown("[🌐 Open Matrix](https://munafasutra.com/nse/)")
-        components.html('<iframe src="https://munafasutra.com/nse/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://munafasutra.com/nse/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[14]:
-        st.markdown("[🌐 Open Matrix](https://dhan.co/all-stocks-list/)")
-        components.html('<iframe src="https://dhan.co/all-stocks-list/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://dhan.co/all-stocks-list/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[15]:
-        st.markdown("[🌐 Open Matrix](https://dhan.co/stocks/market/most-active-stocks-this-week/)")
-        components.html('<iframe src="https://dhan.co/stocks/market/most-active-stocks-this-week/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://dhan.co/stocks/market/most-active-stocks-this-week/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[16]:
-        st.markdown("[🌐 Open Matrix](https://scanx.trade/create-custom-screener)")
-        components.html('<iframe src="https://scanx.trade/create-custom-screener" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://scanx.trade/create-custom-screener"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[17]:
-        st.markdown("[🌐 Open Matrix](https://scanx.trade/stock-screener/live-market-screener)")
-        components.html('<iframe src="https://scanx.trade/stock-screener/live-market-screener" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://scanx.trade/stock-screener/live-market-screener"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[18]:
-        st.markdown("[🌐 Open Matrix](https://www.screener.in/explore/)")
-        components.html('<iframe src="https://www.screener.in/explore/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://www.screener.in/explore/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[19]:
-        st.markdown("[🌐 Open Matrix](https://www.chittorgarh.com/)")
-        components.html('<iframe src="https://www.chittorgarh.com/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://www.chittorgarh.com/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[20]:
-        st.markdown("[🌐 Open Matrix](https://ipowatch.in/)")
-        components.html('<iframe src="https://ipowatch.in/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://ipowatch.in/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[21]:
-        st.markdown("[🌐 Open Matrix](https://nsepulse.streamlit.app/)")
-        components.html('<iframe src="https://nsepulse.streamlit.app/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://nsepulse.streamlit.app/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[22]:
-        st.markdown("[🌐 Open Matrix](https://chartink.com/screeners)")
-        components.html('<iframe src="https://chartink.com/screeners" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://chartink.com/screeners"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[23]:
-        st.markdown("[🌐 Open Matrix](https://chartink.com/scan_dashboard)")
-        components.html('<iframe src="https://chartink.com/scan_dashboard" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://chartink.com/scan_dashboard"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[24]:
-        st.markdown("[🌐 Open Matrix](https://chartink.com/atlas)")
-        components.html('<iframe src="https://chartink.com/atlas" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://chartink.com/atlas"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[25]:
-        st.markdown("[🌐 Open Matrix](https://www.maheshkaushik.com/)")
-        components.html('<iframe src="https://www.maheshkaushik.com/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://www.maheshkaushik.com/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
     with mkt_tabs[26]:
-        st.markdown("[🌐 Open Matrix](https://eftiwealth.com/)")
-        components.html('<iframe src="https://eftiwealth.com/" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
+        _u = "https://eftiwealth.com/"
+        st.markdown(_portal_btn(_u), unsafe_allow_html=True)
+        components.html(f'<iframe src="{_u}" width="100%" height="500" style="border:none; background-color:white;"></iframe>', height=520)
 
     # ==========================================
     # 🏆 MULTI-HORIZON PERFORMANCE SUMMARY MATRIX
     # ==========================================
     st.markdown("---")
     st.markdown("### 📈 Multi-Horizon Performance Summary Matrix")
+
+    perf_width_col1, perf_width_col2 = st.columns([4, 1])
+    with perf_width_col1:
+        perf_sizing_mode = st.radio(
+            "📏 Column Width Adjustment:",
+            ["Default", "✅ Fit to Row 1", "✅✅ Fit to Row 2"],
+            horizontal=True,
+            help="Automatically adjust column widths based on text length of the selected row.",
+            key="perf_matrix_sizing_mode"
+        )
 
     horizons = [
         "1 Day", "2 Day", "3 Day", "5 Day", "7 Day", "10 Day", "12 Day", "15 Days", "20 Days", "25 Days", "30 Days",
@@ -1589,9 +1666,6 @@ Be specific, data-driven, and actionable for a retail investor.
         perf_gb = GridOptionsBuilder.from_dataframe(display_perf_df)
         perf_gb.configure_column("RANK", width=70, pinned="left")
         perf_gb.configure_column("STOCK NAME", width=140, pinned="left", cellRenderer=html_renderer)
-        perf_gb.configure_column("CURRENT PRICE", width=130)
-        perf_gb.configure_column("🔬 BF Score", width=110)
-        perf_gb.configure_column("📊 BF Grade", width=160)
 
         color_code_js = JsCode("""
         function(params) {
@@ -1623,12 +1697,34 @@ Be specific, data-driven, and actionable for a retail investor.
         }
         """)
 
-        for h in detected_metric_map.keys():
-            if h in display_perf_df.columns:
-                perf_gb.configure_column(h, width=130, cellStyle=color_code_js)
+        for col in display_perf_df.columns:
+            if col in ("RANK",):
+                continue  # already configured above
+            if perf_sizing_mode == "✅ Fit to Row 1" and len(display_perf_df) > 0:
+                char_count = get_clean_text_length(display_perf_df.iloc[0][col])
+                header_count = len(str(col))
+                dyn_width = int(max(char_count, header_count) * 7 + 22)
+            elif perf_sizing_mode == "✅✅ Fit to Row 2" and len(display_perf_df) > 1:
+                char_count = get_clean_text_length(display_perf_df.iloc[1][col])
+                header_count = len(str(col))
+                dyn_width = int(max(char_count, header_count) * 7 + 22)
+            else:
+                # Default fixed widths
+                default_widths = {"STOCK NAME": 140, "CURRENT PRICE": 130, "🔬 BF Score": 110, "📊 BF Grade": 160}
+                dyn_width = default_widths.get(col, 130)
 
-        perf_gb.configure_column("🔬 BF Score", width=110, cellStyle=bf_score_js)
-        perf_gb.configure_column("📊 BF Grade", width=160, cellStyle=bf_grade_js)
+            if col == "STOCK NAME":
+                perf_gb.configure_column(col, width=dyn_width, pinned="left", cellRenderer=html_renderer)
+            elif col == "CURRENT PRICE":
+                perf_gb.configure_column(col, width=dyn_width)
+            elif col == "🔬 BF Score":
+                perf_gb.configure_column(col, width=dyn_width, cellStyle=bf_score_js)
+            elif col == "📊 BF Grade":
+                perf_gb.configure_column(col, width=dyn_width, cellStyle=bf_grade_js)
+            elif col in detected_metric_map:
+                perf_gb.configure_column(col, width=dyn_width, cellStyle=color_code_js)
+            else:
+                perf_gb.configure_column(col, width=dyn_width)
 
         perf_gb.configure_grid_options(domLayout="normal", rowHeight=38, headerHeight=45, enableCellTextSelection=True)
         perf_grid_ops = perf_gb.build()
@@ -1641,6 +1737,16 @@ Be specific, data-driven, and actionable for a retail investor.
     st.markdown("---")
     st.markdown("### 🔬 Bottom Fishing Scanner — Buy from Bottom Candidates")
     st.caption("Stocks that are 8–15% above 52W Low, in uptrend, with high volume + strong fundamentals")
+
+    bf_width_col1, bf_width_col2 = st.columns([4, 1])
+    with bf_width_col1:
+        bf_sizing_mode = st.radio(
+            "📏 Column Width Adjustment:",
+            ["Default", "✅ Fit to Row 1", "✅✅ Fit to Row 2"],
+            horizontal=True,
+            help="Automatically adjust column widths based on text length of the selected row.",
+            key="bf_scanner_sizing_mode"
+        )
 
     bf_col1, bf_col2, bf_col3 = st.columns([2, 2, 2])
     with bf_col1:
@@ -1678,12 +1784,36 @@ Be specific, data-driven, and actionable for a retail investor.
         bf_scan_df = pd.DataFrame(bf_results)
 
         bf_gb = GridOptionsBuilder.from_dataframe(bf_scan_df)
-        bf_gb.configure_column("Symbol", width=120, pinned="left")
-        bf_gb.configure_column("Score", width=90, cellStyle=bf_score_js if 'bf_score_js' in dir() else None)
-        bf_gb.configure_column("Grade", width=160)
-        bf_gb.configure_column("CMP", width=100)
-        bf_gb.configure_column("Sector", width=200)
-        bf_gb.configure_column("Key Reasons", width=400)
+
+        bf_score_style = JsCode("""
+        function(params) {
+            let val = parseFloat(params.value);
+            if (val >= 75) return { 'backgroundColor': '#16e37f33', 'color': '#000', 'fontWeight': 'bold' };
+            if (val >= 55) return { 'backgroundColor': '#f4b40033', 'color': '#000', 'fontWeight': 'bold' };
+            if (val >= 35) return { 'backgroundColor': '#ff990033', 'color': '#000' };
+            return { 'backgroundColor': '#ea433533', 'color': '#000' };
+        }
+        """)
+
+        bf_default_widths = {"Symbol": 120, "Score": 90, "Grade": 160, "CMP": 100, "Sector": 200, "Key Reasons": 400}
+        for col in bf_scan_df.columns:
+            if bf_sizing_mode == "✅ Fit to Row 1" and len(bf_scan_df) > 0:
+                char_count = get_clean_text_length(bf_scan_df.iloc[0][col])
+                header_count = len(str(col))
+                dyn_w = int(max(char_count, header_count) * 7 + 22)
+            elif bf_sizing_mode == "✅✅ Fit to Row 2" and len(bf_scan_df) > 1:
+                char_count = get_clean_text_length(bf_scan_df.iloc[1][col])
+                header_count = len(str(col))
+                dyn_w = int(max(char_count, header_count) * 7 + 22)
+            else:
+                dyn_w = bf_default_widths.get(col, 120)
+
+            pinned = "left" if col == "Symbol" else None
+            if col == "Score":
+                bf_gb.configure_column(col, width=dyn_w, pinned=pinned, cellStyle=bf_score_style)
+            else:
+                bf_gb.configure_column(col, width=dyn_w, pinned=pinned)
+
         bf_gb.configure_grid_options(domLayout="normal", rowHeight=40, headerHeight=45)
         bf_grid_ops = bf_gb.build()
 
