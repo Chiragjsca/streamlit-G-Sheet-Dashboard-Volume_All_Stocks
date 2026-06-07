@@ -377,7 +377,7 @@ import streamlit.components.v1 as components
 # ==========================================
 # 🌍 NATIONAL EXCHANGE SCANNER (ALL NSE/BSE)
 # ==========================================
-st.markdown("### 🌍 National Exchange Scanner (All NSE/BSE Stocks)")
+st.markdown("<p style='font-size:0.85rem; font-weight:bold; margin:0; padding:0;'>🌍 National Exchange Scanner (All NSE/BSE Stocks)</p>", unsafe_allow_html=True)
 st.caption("Live market data covering 2,000+ equities. Powered by TradingView.")
 
 with st.expander("🏆 Click to view Full-Market India Rankings", expanded=False):
