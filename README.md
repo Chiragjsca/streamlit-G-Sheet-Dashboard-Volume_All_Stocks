@@ -207,7 +207,7 @@ Most Active, Volume Gainers, Top Gainers/Losers, 52‑Week High/Low, Stocks Trad
 
 Third‑party:
 
-Volume Shockers (Moneycontrol), TradingView Scripts, MunafaSutra, Dhan stock lists, ScanX (custom & live screener), Screener.in explore, Chittorgarh IPO, IPO Watch, NSE Pulse, Chartink (screeners, dashboard, atlas), Mahesh Kaushik, EFTI Wealth
+Volume Shockers (Moneycontrol), TradingView Scripts, MunafaSutra, Dhan stock lists, ScanX (custom & live screener), Screener.in explore, Chittorgarh IPO, IPO Watch, NSE Pulse, Chartink (screeners, dashboard, atlas)
 
 Each tab has an “Open in Browser” button – use it if the iframe does not load on mobile.
 
