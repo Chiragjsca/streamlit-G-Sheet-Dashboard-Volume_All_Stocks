@@ -1,5 +1,5 @@
 
-# 📊 Top 250 NSE Stock-Volume Breakout Dashboard
+# 📊 All NSE Stock-Volume Breakout Dashboard
 
 A professional, all‑in‑one dashboard for Indian stock market analysis.  
 It combines live data from Google Sheets, AI (Gemini/Groq), advanced filtering, watchlists, a **bottom‑fishing** score, a GTT order calculator, dozens of embedded market portals, and much more.
@@ -9,7 +9,7 @@ It combines live data from Google Sheets, AI (Gemini/Groq), advanced filtering, 
 ## ✨ Key Features
 
 - **📈 Live Market Indices** – NIFTY 50, NIFTY Next 50, NIFTY Midcap 50, etc. (Yahoo Finance, refreshes every 60s).
-- **🏢 Top 250 Stocks Matrix** – CMP & daily % change cards, fully linked to NSE.
+- **🏢 All NSE Stocks Matrix** – CMP & daily % change cards, fully linked to NSE.
 - **🏆 Advanced Ranking Dashboards** – Gainers/Losers, Volume Leaders, Most Active (Volume & Value), Top by Turnover.
 - **🌍 National Exchange Scanner** – Embedded TradingView screeners for **all NSE/BSE** stocks (Gainers, Losers, 52W High/Low, Reversals, Top 100 Traded).
 - **📄 Google Sheets Integration** – 6 different sheets (`Top 250 Stocks`, `Final List`, `Diff @ 200 DMA`, etc.) with full colour preservation.
@@ -26,8 +26,8 @@ It combines live data from Google Sheets, AI (Gemini/Groq), advanced filtering, 
 
 --------------------------------------------------------------------------------------------------
 
-📊 Top 250 NSE Stock-Volume Breakout Dashboard – User Guide
-This dashboard is a complete technical & fundamental analysis platform for the top 250 NSE stocks, plus a full-market scanner for all NSE/BSE equities. It combines live data from Google Sheets, AI analysis (Gemini/Groq), advanced filtering, watchlists, order calculators, bottom‑fishing scores, and dozens of embedded market portals.
+📊 All NSE Stock-Volume Breakout Dashboard – User Guide
+This dashboard is a complete technical & fundamental analysis platform for the All NSE NSE stocks, plus a full-market scanner for all NSE/BSE equities. It combines live data from Google Sheets, AI analysis (Gemini/Groq), advanced filtering, watchlists, order calculators, bottom‑fishing scores, and dozens of embedded market portals.
 
 📈 2. Live Market Indices (Top Section)
 Displays NIFTY 50, NIFTY NEXT 50, NIFTY MIDCAP 50 and other key indices.
@@ -40,9 +40,9 @@ Click on any card → opens the official NSE live‑indices page.
 
 💡 If no cards appear, Yahoo Finance data may be temporarily unavailable.
 
-📊 3. Top 250 Stocks Matrix & Ranking Dashboards
+📊 3. All NSE Stocks Matrix & Ranking Dashboards
 3.1 Stock Ticker Cards
-Shows CMP and daily % change for each stock in the “Top 250 Stocks” sheet.
+Shows CMP and daily % change for each stock in the “All NSE Stocks” sheet.
 
 Click a card → opens NSE quote page.
 
