@@ -72,16 +72,13 @@ Strategy 4 — Mean Reversion from 52W High/Low
 # ==========================================
 hide_streamlit_ui = """
 <style>
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    [data-testid="stToolbar"] {visibility: hidden;}
-    footer {visibility: hidden;}
+    #MainMenu {visibility: show;}
+    header {visibility: show;}
+    [data-testid="stToolbar"] {visibility: show;}
+    footer {visibility: show;}
 </style>
 """
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
-
-import streamlit as st
-from datetime import datetime
 
 import streamlit as st
 from datetime import datetime
@@ -125,6 +122,21 @@ if not st.session_state.logged_in:
 
     st.stop()
 
+# ==========================================
+# YOUR EXISTING CSS (keep this)
+# ==========================================
+st.markdown("""
+<style>
+    /* Reduce ALL headings to 90% smaller size */
+    h1, h2, h3, h4, h5, h6, .stSubheader, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        font-size: 0.85rem !important;
+        font-weight: bold !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+</style>
+""", unsafe_allow_html=True)    
+    
 # ==========================================
 # 🌍 GLOBAL MARKET TICKER (LIVE DATA GRID)
 # ==========================================
