@@ -67,21 +67,38 @@ Strategy 4 — Mean Reversion from 52W High/Low
   Rule 11: Exit/short signal when price is within 5% of the 52-week high with RSI > 70; use Bollinger Band upper band touch as secondary confirmation; target the middle Bollinger Band as exit.
   Rule 12: Apply a volume reversal filter — only enter when the reversal candle's volume is ≥ 1.5× the 20-day average; plot the 52-week high and low as horizontal reference lines on the chart."""
 
+import streamlit as st
+
 # ==========================================
-# 🛡️ HIDE STREAMLIT MENU & GITHUB ICON
+# 🛡️ HIDE STREAMLIT MENU
 # ==========================================
 hide_streamlit_ui = """
 <style>
     #MainMenu {visibility: show;}
     header {visibility: show;}
-    [data-testid="stToolbar"] {visibility: hidden;}
+    [data-testid="stToolbar"] {visibility: show;}
     footer {visibility: show;}
 </style>
 """
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
 
 import streamlit as st
-from datetime import datetime
+
+# ==========================================
+# 🛡️ HIDE GITHUB ICON ONLY
+# ==========================================
+hide_github_icon = """
+<style>
+    [data-testid="stToolbar"] {
+        right: 2rem;
+    }
+    [data-testid="stToolbar"]::before {
+        content: "";
+    }
+    button[kind="header"] {display: none;}
+</style>
+"""
+st.markdown(hide_github_icon, unsafe_allow_html=True)
 
 # ==========================================
 # 🔐 ADMIN LOGIN SYSTEM
