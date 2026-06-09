@@ -17,7 +17,7 @@ import google.generativeai as genai
 # ==========================================
 # ⚙️ PAGE CONFIGURATION
 # ==========================================
-st.set_page_config(page_title="Top 250 NSE Stock-Volume Breakout Dashboard", layout="wide", page_icon="📊")
+st.set_page_config(page_title="All Stock-Volume Breakout Dashboard", layout="wide", page_icon="📊")
 
 # ==========================================
 # 🤖 CONFIGURE AI (GEMINI + GROQ)
@@ -156,7 +156,7 @@ if "ai_history" not in st.session_state:
 
 if not st.session_state.logged_in:
     # Top hint
-    st.markdown("<p style='text-align: center; margin-top: 100px; color: Green; font-size: 18px;'>250-V Dashboard</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; margin-top: 100px; color: Green; font-size: 18px;'>All-V Dashboard</p>", unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center; margin-top: 0px; font-size: 20px;'>🔐 Admin Login</h1>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 1, 1])
@@ -207,7 +207,7 @@ import yfinance as yf
 import streamlit as st
 from datetime import datetime
 
-st.markdown("<p style='font-size:0.85rem; font-weight:bold; margin:0; padding:0;'>📊 Top 250 NSE Stock-Volume Breakout Dashboard</p>", unsafe_allow_html=True)
+st.markdown("<p style='font-size:0.85rem; font-weight:bold; margin:0; padding:0;'>📊 All Stock-Volume Breakout Dashboard</p>", unsafe_allow_html=True)
 st.caption(f"Data refreshed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 @st.cache_data(ttl=60)
@@ -540,7 +540,7 @@ st.write("---")
 @st.cache_data(ttl=300)
 def get_sheet_stocks_data():
     # Fetching strictly from the requested tab
-    df = load_sheet_data_with_colors("Top 250 Stocks")
+    df = load_sheet_data_with_colors("NSE Price Data")
     data_grid = {}
     
     if df.empty:
@@ -609,10 +609,10 @@ for name, info in sheet_live_data.items():
 
 sheet_cards_html += "</div>"
 
-with st.expander("📈 Click to view Top 250 Stocks Matrix", expanded=False):
+with st.expander("📈 Click to view NSE Price Data Matrix", expanded=False):
     # Failsafe if the sheet is completely empty or all rows returned "No Data"
     if sheet_valid_cards_count == 0:
-        st.info("Stock matrix data is currently unavailable. Please check the 'Top 250 Stocks' sheet.")
+        st.info("Stock matrix data is currently unavailable. Please check the 'NSE Price Data' sheet.")
     else:
         st.markdown(sheet_cards_html, unsafe_allow_html=True)
 
@@ -623,7 +623,7 @@ st.write("---")
 # ==========================================
 @st.cache_data(ttl=300)
 def get_ranked_sheet_data():
-    df = load_sheet_data_with_colors("Top 250 Stocks")
+    df = load_sheet_data_with_colors("NSE Price Data")
     if df.empty:
         return pd.DataFrame()
         
@@ -721,9 +721,9 @@ def build_ranking_cards_html(dataframe, metric_label="change"):
 # Fetch Data
 rank_data = get_ranked_sheet_data()
 
-with st.expander("🏆 Click to view Advanced Ranking Dashboards (Top 250 Stocks)", expanded=False):
+with st.expander("🏆 Click to view Advanced Ranking Dashboards (NSE Price Data)", expanded=False):
     if rank_data.empty:
-        st.info("Ranking data is currently unavailable. Please check the 'Top 250 Stocks' sheet.")
+        st.info("Ranking data is currently unavailable. Please check the 'NSE Price Data' sheet.")
     else:
         # 1. Top 20 Gainers/Losers
         df_gainers = rank_data.nlargest(20, 'Pct_Change')
@@ -949,7 +949,7 @@ def get_gspread_client():
     creds = Credentials.from_service_account_info(info, scopes=scope)
     return gspread.authorize(creds)
 
-SPREADSHEET_ID = "1SFhuZbLLlwwFsNo1k2RRx_Zp6bAkRR20W0F_zTwgdwU"
+SPREADSHEET_ID = "1Sv5UhBbaXyG6-3_bohCNpJOyxZU8s8FKI3JfIwQMjjM"
 
 def ensure_watchlist_sheet(client):
     """Create Watchlist sheet if it doesn't exist; return worksheet."""
@@ -1119,7 +1119,7 @@ search_query = st.sidebar.text_input("Search by Symbol, Name, etc...", key="sear
 
 st.sidebar.markdown("---")
 st.sidebar.header("📑 Select a Tab")
-sheet_names = ["Top 250 Stocks", "Final List", "Final List 2", "Diff @ 200 DMA", "+%", "-%"]
+sheet_names = ["NSE Fundamentals", "Final List", "Final List 2", "-Diff @ 200 DMA", "+Diff @ 200 DMA", "NSE Price Data", "52W Low-GTT", "+%", "-%"]
 selected_sheet = st.sidebar.selectbox("Choose sheet", sheet_names, key="filter_sheet")
 
 # ---------- Main Execution ----------
