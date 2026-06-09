@@ -494,7 +494,7 @@ st.write("---")
 @st.cache_data(ttl=300)
 def get_sheet_stocks_data():
     # Fetching strictly from the requested tab
-    df = load_sheet_data_with_colors("Top 250 Stocks")
+    df = load_sheet_data_with_colors("NSE Price Data")
     data_grid = {}
     
     if df.empty:
@@ -563,10 +563,10 @@ for name, info in sheet_live_data.items():
 
 sheet_cards_html += "</div>"
 
-with st.expander("📈 Click to view Top 250 Stocks Matrix", expanded=False):
+with st.expander("📈 Click to view NSE Price Data Matrix", expanded=False):
     # Failsafe if the sheet is completely empty or all rows returned "No Data"
     if sheet_valid_cards_count == 0:
-        st.info("Stock matrix data is currently unavailable. Please check the 'Top 250 Stocks' sheet.")
+        st.info("Stock matrix data is currently unavailable. Please check the 'NSE Price Data' sheet.")
     else:
         st.markdown(sheet_cards_html, unsafe_allow_html=True)
 
@@ -577,7 +577,7 @@ st.write("---")
 # ==========================================
 @st.cache_data(ttl=300)
 def get_ranked_sheet_data():
-    df = load_sheet_data_with_colors("Top 250 Stocks")
+    df = load_sheet_data_with_colors("NSE Price Data")
     if df.empty:
         return pd.DataFrame()
         
@@ -675,9 +675,9 @@ def build_ranking_cards_html(dataframe, metric_label="change"):
 # Fetch Data
 rank_data = get_ranked_sheet_data()
 
-with st.expander("🏆 Click to view Advanced Ranking Dashboards (Top 250 Stocks)", expanded=False):
+with st.expander("🏆 Click to view Advanced Ranking Dashboards (NSE Price Data)", expanded=False):
     if rank_data.empty:
-        st.info("Ranking data is currently unavailable. Please check the 'Top 250 Stocks' sheet.")
+        st.info("Ranking data is currently unavailable. Please check the 'NSE Price Data' sheet.")
     else:
         # 1. Top 20 Gainers/Losers
         df_gainers = rank_data.nlargest(20, 'Pct_Change')
