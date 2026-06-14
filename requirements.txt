@@ -7,3 +7,4 @@ google-generativeai
 streamlit-aggrid
 openpyxl
 yfinance
+groq
